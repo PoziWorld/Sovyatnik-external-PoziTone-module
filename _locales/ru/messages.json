@@ -1,0 +1,16 @@
+{
+  "name": {
+    "message": "Совятник | PoziTone-модуль"
+  }
+, "description": {
+    "message": "Отображает информацию о текущем саммари от Совятника посредством всплывающего оповещения"
+  }
+
+, "playerNotFound": {
+    "message": "плеер не найден"
+  }
+
+, "connectWithPozitone": {
+    "message": "Подсоединить к PoziTone"
+  }
+}

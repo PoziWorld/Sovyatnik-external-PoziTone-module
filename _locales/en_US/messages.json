@@ -1,0 +1,16 @@
+{
+  "name": {
+    "message": "Sovyatnik | PoziTone module"
+  }
+, "description": {
+    "message": "Displays info about currently played summary from Sovyatnik via notification"
+  }
+
+, "playerNotFound": {
+    "message": "player not found"
+  }
+
+, "connectWithPozitone": {
+    "message": "Connect with PoziTone"
+  }
+}
