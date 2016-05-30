@@ -3,7 +3,7 @@
     "message": "Sovyatnik | PoziTone module"
   }
 , "shortName": {
-    "message": "PTM Sovyatnik"
+    "message": "Sovyatnik"
   }
 , "description": {
     "message": "New features of Sovyatnik: audio summary info notifications, easy player control, listened-to audio summaries list."
