@@ -2,8 +2,11 @@
   "name": {
     "message": "Sovyatnik | PoziTone module"
   }
+, "shortName": {
+    "message": "PTM Sovyatnik"
+  }
 , "description": {
-    "message": "Displays info about currently played summary from Sovyatnik via notification"
+    "message": "New features of Sovyatnik: audio summary info notifications, easy player control, listened-to audio summaries list."
   }
 
 , "playerNotFound": {
@@ -12,5 +15,24 @@
 
 , "connectWithPozitone": {
     "message": "Connect with PoziTone"
+  }
+, "openModuleSettings": {
+    "message": "Open module settings"
+  }
+, "sovyatnikCopyright": {
+    "message": "Sovyatnik and Sovyatnik logo are properties of Sovyatnik team."
+  }
+, "poziworldCopyright": {
+    "message": "&copy; PoziWorld, <span class=\"copyrightYear\" data-copyright-start-year=\"2016\"></span>"
+  }
+
+, "pozitoneModuleApiConnectUnrecognizedError": {
+    "message": "Unrecognized error"
+  }
+, "pozitoneModuleApiConnectStatusCode400": {
+    "message": "Connection status unknown because of invalid response format. Try again."
+  }
+, "pozitoneModuleApiConnectStatusCode404": {
+    "message": "PoziTone not found. Make sure PoziTone is installed, then try again."
   }
 }

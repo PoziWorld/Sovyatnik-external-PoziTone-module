@@ -9,6 +9,8 @@
 
     Utils
       checkForRuntimeError()
+      getStorageItems()
+      setStorageItems()
       createTabOrUpdate()
       openOptionsPage()
 
@@ -57,6 +59,87 @@
     else if ( typeof funcCallback === 'function' ) {
       funcCallback();
     }
+  };
+
+  /**
+   * Get the requested data from StorageArea.
+   *
+   * @type    method
+   * @param   Storage
+   *            Target storage.
+   * @param   miscGet
+   *            A single key to get, list of keys to get, or a dictionary
+   *            specifying default values (see description of the object).
+   *            An empty list or object will return an empty result object.
+   *            Pass in null to get the entire contents of storage.
+   * @param   funcSuccessCallback
+   *            Optional. Function to run on success.
+   * @param   funcErrorCallback
+   *            Optional. Function to run on error.
+   * @param   objErrorLogDetails
+   *            Optional. Data to be passed on error.
+   * @return  void
+   **/
+
+  Utils.prototype.getStorageItems = function(
+      Storage
+    , miscGet
+    , funcSuccessCallback
+    , funcErrorCallback
+    , objErrorLogDetails
+  ) {
+    var self = this;
+
+    Storage.get( miscGet, function( objReturn ) {
+      self.checkForRuntimeError(
+          function() {
+            if ( typeof funcSuccessCallback === 'function' ) {
+              funcSuccessCallback( objReturn );
+            }
+          }
+        , funcErrorCallback
+        , objErrorLogDetails
+      );
+    } );
+  };
+
+  /**
+   * Set multiple items in StorageArea.
+   *
+   * @type    method
+   * @param   Storage
+   *            Target storage.
+   * @param   objItems
+   *            An object which gives each key/val pair to update storage with.
+   * @param   funcSuccessCallback
+   *            Optional. Function to run on success.
+   * @param   funcErrorCallback
+   *            Optional. Function to run on error.
+   * @param   objErrorLogDetails
+   *            Optional. Data to be passed on error.
+   * @return  void
+   **/
+
+  Utils.prototype.setStorageItems = function(
+      Storage
+    , objItems
+    , funcSuccessCallback
+    , funcErrorCallback
+    , objErrorLogDetails
+  ) {
+    var self = this;
+
+    Storage.set( objItems, function() {
+      self.checkForRuntimeError(
+          function() {
+            if ( typeof funcSuccessCallback === 'function' ) {
+              funcSuccessCallback();
+            }
+          }
+        , funcErrorCallback
+        , objErrorLogDetails
+      );
+    } );
   };
 
   /**

@@ -8,6 +8,7 @@
   Table of Contents:
 
     Constants
+    Storage
 
  ============================================================================ */
 
@@ -32,5 +33,20 @@ const
   , strConstChromeVersion = boolConstIsBowserAvailable ? bowser.chromeVersion : ''
   , boolConstUseOptionsUi = strConstChromeVersion >= '40.0' && ! boolConstIsOpera
 
-  , strConstPozitoneEdition = 'test'
+  , objConst = {
+        strPozitoneEdition : 'test' // TODO: Use proper edition
+      , strModuleId : 'ru_sovyatnik'
+      , strHostApiVersionVar : 'strHostApiVersion'
+    }
+  ;
+
+/* =============================================================================
+
+  Storage
+
+ ============================================================================ */
+
+var StorageApi = chrome.storage
+  , StorageLocal = StorageApi.local
+  , StorageSync = StorageApi.sync || StorageLocal
   ;

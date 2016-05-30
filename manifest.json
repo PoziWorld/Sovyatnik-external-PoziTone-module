@@ -5,7 +5,7 @@
   , "default_locale" : "en_US"
   , "name" : "__MSG_name__"
   , "description" : "__MSG_description__"
-  , "version" : "0.1.3"
+  , "version" : "0.2.4"
 
   , "short_name" : "PTM sovyatnik.ru"
   , "author" : "PoziWorld"
@@ -47,6 +47,7 @@
           , "global/js/const.js"
           , "global/js/utils.js"
           , "global/js/background.js"
+          , "global/js/pozitone-module-api.js"
         ]
     }
   , "options_ui" : {

@@ -9,10 +9,16 @@
 
     PageWatcher
       init()
+      addRuntimeOnMessageListener()
       convertNotificationLogoUrl()
       onPlay()
       onPause()
       sendMediaEvent()
+      triggerPlayerAction_playStop()
+      triggerPlayerAction_mute()
+      triggerPlayerAction_unmute()
+      triggerPlayerAction_muteUnmute()
+      triggerPlayerAction_showNotification()
 
  ============================================================================ */
 
@@ -36,6 +42,7 @@
     this.widget = SC.Widget( $$soundcloudIframe );
 
     this.boolIsUserLoggedIn = true;
+    this.boolHadPlayedBefore = false;
     this.boolDisregardSameMessage = true;
 
     this.objPlayerInfo = {
@@ -44,6 +51,7 @@
       , boolIsPlaying : false
       , boolIsMuted : false
       , intVolume : 0
+      , intVolumeBeforeMuted : 0
       , boolCanPlayNextTrackLoggedOut : false
       , boolCanPlayPreviousTrackLoggedOut : false
     };
@@ -62,7 +70,7 @@
   }
 
   /**
-   * Set event listeners.
+   * Set event listeners, initialize API.
    *
    * @type    method
    * @param   No Parameters Taken
@@ -72,7 +80,8 @@
   PageWatcher.prototype.init = function () {
     var self = this;
 
-    pozitoneModule.api.init( strConstPozitoneEdition );
+    self.addRuntimeOnMessageListener();
+    pozitoneModule.api.init( objConst.strPozitoneEdition, self );
     self.convertNotificationLogoUrl();
 
     self.widget.bind( SC.Widget.Events.READY, function() {
@@ -86,6 +95,31 @@
         self.onPause();
       } );
     } );
+
+  };
+
+  /**
+   * Listen for commands sent from Background and/or PoziTone.
+   * If requested function found, call it.
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.addRuntimeOnMessageListener = function () {
+    chrome.runtime.onMessage.addListener(
+      function( objMessage, objSender, funcSendResponse ) {
+        pozitoneModule.api.processRequest(
+            objMessage
+          , objSender
+          , funcSendResponse
+        );
+
+        // Indicate that the response function will be called asynchronously
+        return true;
+      }
+    );
   };
 
   /**
@@ -129,7 +163,13 @@
         self.objPlayerInfo.intVolume = intVolume;
         self.objStationInfo.strTrackInfo = pozitoneModule.api.setMediaInfo( objCurrentSound.user.username, objCurrentSound.title );
 
-        self.sendMediaEvent();
+        if ( ! self.boolHadPlayedBefore ) {
+          self.sendMediaEvent( 'onFirstPlay' );
+          self.boolHadPlayedBefore = true;
+        }
+        else {
+          self.sendMediaEvent( 'onPlay' );
+        }
       });
     } );
   };
@@ -149,7 +189,7 @@
 
     // get information about currently playing sound
     self.widget.getCurrentSound( function( objCurrentSound ) {
-      self.sendMediaEvent();
+      self.sendMediaEvent( 'onPause' );
     } );
   };
 
@@ -157,11 +197,18 @@
    * Send media event information to PoziTone.
    *
    * @type    method
-   * @param   No Parameters Taken
+   * @param   strFeedback
+   *            Optional. Feedback for main actions (play/stop, mute/unmute).
    * @return  void
    **/
 
-  PageWatcher.prototype.sendMediaEvent = function () {
+  PageWatcher.prototype.sendMediaEvent = function ( strFeedback ) {
+    this.objStationInfo.strAdditionalInfo =
+      ( typeof strFeedback === 'string' && strFeedback !== '' )
+        ? strFeedback
+        : ''
+        ;
+
     var objData = {
         boolIsUserLoggedIn : this.boolIsUserLoggedIn
       , boolDisregardSameMessage : this.boolDisregardSameMessage
@@ -171,6 +218,97 @@
     };
 
     pozitoneModule.api.sendMediaEvent( objData );
+  };
+
+  /**
+   * Toggle the sound.
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.triggerPlayerAction_playStop = function() {
+    this.widget.toggle();
+  };
+
+  /**
+   * Simulate "Mute" player method
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.triggerPlayerAction_mute = function() {
+    var self = this;
+
+    self.widget.getVolume( function ( flVolume ) {
+      self.objPlayerInfo.intVolumeBeforeMuted = pozitoneModule.api.convertVolumeToPercent( flVolume );
+
+      self.widget.setVolume( 0 );
+      self.objPlayerInfo.boolIsMuted = true;
+
+      self.sendMediaEvent( 'onMute' );
+    } );
+  };
+
+  /**
+   * Simulate "Unmute" player method
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.triggerPlayerAction_unmute = function() {
+    this.widget.setVolume(
+      pozitoneModule.api.convertPercentToVolume( this.objPlayerInfo.intVolumeBeforeMuted )
+    );
+    this.objPlayerInfo.boolIsMuted = false;
+
+    this.sendMediaEvent( 'onUnmute' );
+  };
+
+  /**
+   * If volume is not 0, then mute. Otherwise, unmute.
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.triggerPlayerAction_muteUnmute = function() {
+    var self = this
+      , promise = new Promise( function( funcResolve, funcReject ) {
+          self.widget.getVolume( function ( flVolume ) {
+            funcResolve( flVolume );
+          } );
+        } )
+      ;
+
+    promise
+      .then( function ( flVolume ) {
+        if ( flVolume === 0 ) {
+          self.triggerPlayerAction_unmute();
+        }
+        else {
+          self.triggerPlayerAction_mute();
+        }
+      } )
+      ;
+  };
+
+  /**
+   * Show the last shown notification again.
+   *
+   * @type    method
+   * @param   No Parameters Taken
+   * @return  void
+   **/
+
+  PageWatcher.prototype.triggerPlayerAction_showNotification = function() {
+    this.sendMediaEvent( 'onShowNotification' );
   };
 
   if ( typeof pozitoneModule === 'undefined' ) {

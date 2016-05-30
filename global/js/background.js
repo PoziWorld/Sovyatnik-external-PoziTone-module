@@ -9,6 +9,7 @@
 
     Listeners
       runtime.onInstalled
+      runtime.onMessageExternal
 
  ============================================================================ */
 
@@ -35,8 +36,36 @@
 
   chrome.runtime.onInstalled.addListener(
     function( objDetails ) {
-      // TODO: Only on install
-      pozitoneModule.utils.openOptionsPage( 'background' );
+      if ( objDetails.reason === 'install' ) {
+        pozitoneModule.utils.openOptionsPage( 'background' );
+      }
+    }
+  );
+
+  /**
+   * Listens for commands sent from PoziTone.
+   * If requested function found, call it.
+   *
+   * @type    method
+   * @param   objMessage
+   *            Message received.
+   * @param   objSender
+   *            Sender of the message.
+   * @param   funcSendResponse
+   *            Used to send a response.
+   * @return  void
+   **/
+
+  chrome.runtime.onMessageExternal.addListener(
+    function( objMessage, objSender, funcSendResponse ) {
+      pozitoneModule.api.processRequest(
+          objMessage
+        , objSender
+        , funcSendResponse
+      );
+
+      // Indicate that the response function will be called asynchronously
+      return true;
     }
   );
 
