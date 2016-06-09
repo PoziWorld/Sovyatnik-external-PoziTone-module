@@ -33,6 +33,6 @@
     "message": "Статус подсоединения неизвестен, т.к. формат ответа нераспознан. Попробуйте ещё раз."
   }
 , "pozitoneModuleApiConnectStatusCode404": {
-    "message": "PoziTone не найден. Убедитесь, что PoziTone установлен, затем попробуйте ещё раз."
+    "message": "PoziTone не найден. Убедитесь, что <a href=\"#\" target=\"_blank\" id=\"apiConnectInstallationLink\" class=\"externalLink\" data-id=\"installation\">PoziTone</a> установлен, затем попробуйте ещё раз."
   }
 }

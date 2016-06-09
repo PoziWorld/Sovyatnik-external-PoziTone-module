@@ -106,7 +106,11 @@
                 strMessage = chrome.i18n.getMessage( 'pozitoneModuleApiConnectUnrecognizedError' );
               }
   
-              document.getElementById( 'connectionStatus' ).textContent = strMessage;
+              document.getElementById( 'connectionStatus' ).innerHTML = strMessage;
+
+              if ( document.getElementById( 'apiConnectInstallationLink' ) ) {
+                document.getElementById( 'apiConnectInstallationLink' ).href = objConst.strPozitoneInstallationUrl;
+              }
             }
         );
       } );

@@ -33,6 +33,6 @@
     "message": "Connection status unknown because of invalid response format. Try again."
   }
 , "pozitoneModuleApiConnectStatusCode404": {
-    "message": "PoziTone not found. Make sure PoziTone is installed, then try again."
+    "message": "PoziTone not found. Make sure <a href=\"#\" target=\"_blank\" id=\"apiConnectInstallationLink\" class=\"externalLink\" data-id=\"installation\">PoziTone</a> is installed, then try again."
   }
 }
