@@ -81,7 +81,7 @@
     var self = this;
 
     self.addRuntimeOnMessageListener();
-    pozitoneModule.api.init( objConst.strPozitoneEdition, self );
+    pozitoneModule.api.init( objConst.strPozitoneEdition, self, boolConstIsOperaAddon );
     self.convertNotificationLogoUrl();
 
     self.widget.bind( SC.Widget.Events.READY, function() {

@@ -14,6 +14,7 @@
       onConnectModuleResponse()
       openModuleSettings()
       sendMediaEvent()
+      sendMessage()
       processRequest()
       forwardCallToTab()
       processButtonCall()
@@ -32,7 +33,7 @@
   'use strict';
 
   function Api() {
-    var strVersion = '0.2';
+    var strVersion = '0.3.1';
 
     this.strMediaInfoDivider = ' – ';
     this.strCallDivider = '/';
@@ -58,17 +59,28 @@
    * @param   strPozitoneEdition
    *            PoziTone edition (alpha, beta, stable, test).
    * @param   pageWatcher
-   *            Save PageWatcher instance.
+   *            Optional. Save PageWatcher instance.
+   * @param   boolUseOperaAddonId
+   *            Optional. IDs are different for Opera and Yandex.
    * @return  void
    **/
 
-  Api.prototype.init = function ( strPozitoneEdition, pageWatcher ) {
+  Api.prototype.init = function ( strPozitoneEdition, pageWatcher, boolUseOperaAddonId ) {
     var objPozitoneEditions = {
-        'alpha' : 'lbjkjmmcckjjijnnhdabbnkddgmpinhc'    
-      , 'beta' : 'hfdnjjobhcbkciapachaegijeednggeh'    
-      , 'stable' : 'bdglbogiolkffcmojmmkipgnpkfipijm'    
-      , 'test' : 'ioiggdgamcfglpihfidbphgoofpmncfi'    
-    };
+          'built-in' : ''
+        , 'test' : 'ioiggdgamcfglpihfidbphgoofpmncfi'
+      };
+
+    // Not Opera or Yandex
+    if ( typeof boolUseOperaAddonId !== 'boolean' || ! boolUseOperaAddonId ) {
+      objPozitoneEditions[ 'alpha' ] = 'lbjkjmmcckjjijnnhdabbnkddgmpinhc';
+      objPozitoneEditions[ 'beta' ] = 'hfdnjjobhcbkciapachaegijeednggeh';
+      objPozitoneEditions[ 'stable' ] = 'bdglbogiolkffcmojmmkipgnpkfipijm';
+    }
+    // Opera or Yandex
+    else {
+      objPozitoneEditions[ 'stable' ] = 'bnmpcdcpmgfekpcekglbeendkjkflldd';
+    }
 
     if ( typeof strPozitoneEdition !== 'string'
       || typeof objPozitoneEditions[ strPozitoneEdition ] !== 'string'
@@ -76,7 +88,12 @@
       strPozitoneEdition = 'test';
     }
 
-    this.strPozitoneId = objPozitoneEditions[ strPozitoneEdition ];
+    var strPozitoneId = objPozitoneEditions[ strPozitoneEdition ];
+
+    this.strPozitoneId = strPozitoneId === ''
+                            ? null
+                            : strPozitoneId
+                            ;
     this.pageWatcher = pageWatcher;
   };
 
@@ -96,10 +113,8 @@
   Api.prototype.connectModule = function ( objSettings, funcSuccessCallback, funcErrorCallback ) {
     var self = this;
 
-    // TODO: Make a separate method
-    chrome.runtime.sendMessage(
-        this.strPozitoneId
-      , {
+    self.sendMessage(
+        {
           objPozitoneApiRequest : {
               strVersion : self.getApiVersion()
             , strCall : 'module'
@@ -191,10 +206,8 @@
   Api.prototype.openModuleSettings = function ( strModuleId, funcSuccessCallback, funcErrorCallback ) {
     var self = this;
 
-    // TODO: Make a separate method
-    chrome.runtime.sendMessage(
-        this.strPozitoneId
-      , {
+    self.sendMessage(
+        {
           objPozitoneApiRequest : {
               strVersion : self.getApiVersion()
             , strCall : 'module-settings-page/' + strModuleId
@@ -223,10 +236,8 @@
   Api.prototype.sendMediaEvent = function ( objData, funcSuccessCallback, funcErrorCallback ) {
     var self = this;
 
-    // TODO: Make a separate method
-    chrome.runtime.sendMessage(
-        this.strPozitoneId
-      , {
+    self.sendMessage(
+        {
           objPozitoneApiRequest : {
               strVersion : self.getApiVersion()
             , strCall : 'media'
@@ -245,6 +256,45 @@
           }
         }
     );
+  };
+
+  /**
+   * Send message via chrome.runtime.sendMessage.
+   *
+   * @type    method
+   * @param   objMessage
+   *            Message to send.
+   * @param   funcCallback
+   *            Optional. Function to run on response.
+   * @return  void
+   **/
+
+  Api.prototype.sendMessage = function ( objMessage, funcCallback ) {
+    var strPozitoneId = this.strPozitoneId;
+
+    // External modules
+    if ( strPozitoneId ) {
+      chrome.runtime.sendMessage(
+          strPozitoneId
+        , objMessage
+        , function ( objResponse ) {
+            if ( typeof funcCallback === 'function' ) {
+              funcCallback( objResponse );
+            }
+          }
+      );
+    }
+    // Built-in modules
+    else {
+      chrome.runtime.sendMessage(
+          objMessage
+        , function ( objResponse ) {
+            if ( typeof funcCallback === 'function' ) {
+              funcCallback( objResponse );
+            }
+          }
+      );
+    }
   };
 
   /**
