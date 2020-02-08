@@ -18,10 +18,7 @@
     }
 
   , "permissions" : [
-        "*://*.sovyatnik.ru/"
-      , "*://*.w.soundcloud.com/"
-      , "storage"
-      , "tabs"
+        "storage"
     ]
   , "content_scripts" : [
         {
