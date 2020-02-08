@@ -81,7 +81,7 @@
     var self = this;
 
     self.addRuntimeOnMessageListener();
-    pozitoneModule.api.init( objConst.strPozitoneEdition, self, boolConstIsOperaAddon );
+    pozitoneModule.sdk.init( objConst.strPozitoneEdition, self, boolConstIsOperaAddon );
     self.convertNotificationLogoUrl();
 
     self.widget.bind( SC.Widget.Events.READY, function() {
@@ -110,7 +110,7 @@
   PageWatcher.prototype.addRuntimeOnMessageListener = function () {
     chrome.runtime.onMessage.addListener(
       function( objMessage, objSender, funcSendResponse ) {
-        pozitoneModule.api.processRequest(
+        pozitoneModule.sdk.processRequest(
             objMessage
           , objSender
           , funcSendResponse
@@ -136,7 +136,7 @@
   PageWatcher.prototype.convertNotificationLogoUrl = function () {
     var self = this;
 
-    pozitoneModule.api.convertImageSrcToDataUrl(
+    pozitoneModule.sdk.convertImageSrcToDataUrl(
         chrome.runtime.getURL( self.objStationInfo.strLogoDataUri )
       , function ( strDataUri ) {
           self.objStationInfo.strLogoDataUri = strDataUri;
@@ -161,7 +161,7 @@
     self.widget.getCurrentSound( function( objCurrentSound ) {
       self.widget.getVolume( function( intVolume ) {
         self.objPlayerInfo.intVolume = intVolume;
-        self.objStationInfo.strTrackInfo = pozitoneModule.api.setMediaInfo( objCurrentSound.user.username, objCurrentSound.title );
+        self.objStationInfo.strTrackInfo = pozitoneModule.sdk.setMediaInfo( objCurrentSound.user.username, objCurrentSound.title );
 
         if ( ! self.boolHadPlayedBefore ) {
           self.sendMediaEvent( 'onFirstPlay' );
@@ -217,7 +217,7 @@
       , strCommand : ''
     };
 
-    pozitoneModule.api.sendMediaEvent( objData );
+    pozitoneModule.sdk.sendMediaEvent( objData );
   };
 
   /**
@@ -244,7 +244,7 @@
     var self = this;
 
     self.widget.getVolume( function ( flVolume ) {
-      self.objPlayerInfo.intVolumeBeforeMuted = pozitoneModule.api.convertVolumeToPercent( flVolume );
+      self.objPlayerInfo.intVolumeBeforeMuted = pozitoneModule.sdk.convertVolumeToPercent( flVolume );
 
       self.widget.setVolume( 0 );
       self.objPlayerInfo.boolIsMuted = true;
@@ -263,7 +263,7 @@
 
   PageWatcher.prototype.triggerPlayerAction_unmute = function() {
     this.widget.setVolume(
-      pozitoneModule.api.convertPercentToVolume( this.objPlayerInfo.intVolumeBeforeMuted )
+      pozitoneModule.sdk.convertPercentToVolume( this.objPlayerInfo.intVolumeBeforeMuted )
     );
     this.objPlayerInfo.boolIsMuted = false;
 

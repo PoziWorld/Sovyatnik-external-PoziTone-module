@@ -52,7 +52,7 @@
 
   document.addEventListener( 'DOMContentLoaded', function (  ) {
     pozitoneModule.page.init();
-    pozitoneModule.api.init( objConst.strPozitoneEdition, undefined, boolConstIsOperaAddon );
+    pozitoneModule.sdk.init( objConst.strPozitoneEdition, undefined, boolConstIsOperaAddon );
 
     var $$connectCta = document.getElementById( 'connectCta' )
       , $$openModuleSettingsCta = document.getElementById( 'openModuleSettingsCta' )
@@ -64,7 +64,7 @@
       $$connectCta.addEventListener( 'click', function ( objEvent ) {
         var $$this = this;
   
-        pozitoneModule.api.connectModule(
+        pozitoneModule.sdk.connectModule(
             objSettings
           , function( objResponse, intStatusCode, strApiVersion ) {
               $$this.disabled = true;
@@ -118,7 +118,7 @@
 
     if ( boolDocumentContainsOpenModuleSettingsCta ) {
       $$openModuleSettingsCta.addEventListener( 'click', function ( objEvent ) {
-        pozitoneModule.api.openModuleSettings( objConst.strModuleId );
+        pozitoneModule.sdk.openModuleSettings( objConst.strModuleId );
       } );
     }
 
